@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # Netflix GPT 
 
 - create React App
