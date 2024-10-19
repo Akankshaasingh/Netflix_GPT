@@ -15,12 +15,13 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import MovieList from './MovieList';
+import { addTopRatedMovies, addUpcomingMovies } from '../utils/moviesSlice';
 
 const SecondaryContainer = () => {
   const movies = useSelector((store) => store.movies);
 
-  // Check if movies.nowPlayingMovies exists and is an array
-  if (!movies || !movies.nowPlayingMovies) {
+
+  if (!movies || !movies.nowPlayingMovies || !addTopRatedMovies || !addUpcomingMovies) {
     return <p>Loading movies...</p>;
   }
 
@@ -28,10 +29,9 @@ const SecondaryContainer = () => {
     <div className='bg-black'>
       <div className='-mt-60 pl-12 relative z-20'>
       <MovieList title={"Now Playing"} movies={movies.nowPlayingMovies} />
-      <MovieList title={"Popular Movies"} movies={movies.addPopularMovies} />
-      <MovieList title={"Trending Movies"} movies={movies.nowPlayingMovies} />
-      <MovieList title={"Upcoming Movies"} movies={movies.nowPlayingMovies} />
-      <MovieList title={"Horror Movies"} movies={movies.nowPlayingMovies} />
+      <MovieList title={"Top Rated Movies"} movies={movies.addTopRatedMovies} />
+      <MovieList title={"Popular Movies"} movies={movies.addPopularMovies} />  
+      <MovieList title={"UpComing  Movies"} movies={movies.addUpcomingMovies} />
      </div>
     </div>
   );
