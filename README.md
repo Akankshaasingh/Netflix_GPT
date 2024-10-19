@@ -1,7 +1,7 @@
 
 # Netflix GPT 
 
-- create React App
+- Created React App
 - configured TailwindCSS
 - Header
 - Routing of App
@@ -36,7 +36,11 @@
 - Build Movie card
 - TMDB Image CDN URL
 - Updated the browse page 
-- UsePopulaerMovies Custom Hook
+- UsePopulerMovies Custom Hook
+- GPT Search Page
+- Gpt Search Bar
+- (**)Multi-Language Feature in GPT PAge
+-
 
 
 
