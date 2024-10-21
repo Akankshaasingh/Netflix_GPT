@@ -11,7 +11,7 @@ const GptSearchBar = () => {
   const handleGptSearchClick = async () => {
   console.log(searchText.current.value);
     const gptQuery =
-      "Act as a Movie Recommendation system and suggest some movies for the quesry : " +
+      "Act as a Movie Recommendation system and suggest some movies for the query : " +
       searchText.current.value +
       " . only give me name of some movies, in bullet points or comma separated.";
 
