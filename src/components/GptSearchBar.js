@@ -19,9 +19,16 @@ const GptSearchBar = () => {
       messages: [{ role: "user", content: gptQuery }],
       model: "gpt-3.5-turbo",
     });
-    console.log(gptResults.choices);
+
+    if(!gptResults.choices){
+      //TODO: Write Error Handling
+    }
+    console.log(gptResults.choices?.[0]?.message.content);
     
   };
+
+
+  
   return (
     <div className="pt-[10%] flex justify-center ">
       <form
