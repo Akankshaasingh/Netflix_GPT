@@ -40,7 +40,8 @@
 - GPT Search Page
 - Gpt Search Bar
 - (**)Multi-Language Feature in GPT PAge
-- 
+- openAi API fetch for Recommendation
+-  memoization and .env 
 
 
 
