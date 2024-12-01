@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import lang from "../utils/languageConstants";
 import { useDispatch, useSelector } from "react-redux";
-import openai from "../utils/openAi";
+import huggingface from "../utils/hf";
 import { API_OPTIONS } from "../utils/constants";
 import { addGptMovieResult } from "../utils/gptSlice";
 
@@ -11,42 +11,58 @@ const GptSearchBar = () => {
   const searchText = useRef(null);
 
   const searchMovieTMDB = async (movie) => {
-    const data = fetch(
-      "https://api.themoviedb.org/3/search/movie?query=" +
-        movie +
-        "include_adult=false&language=en-US&page=1",
-      API_OPTIONS
-    );
-    const json = (await data).json();
+    try {
+      const response = await fetch(
+        `https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(
+          movie
+        )}&include_adult=false&language=en-US&page=1`,
+        API_OPTIONS
+      );
 
-    return json.results;
+      if (!response.ok) {
+        throw new Error(`TMDB API Error: ${response.statusText}`);
+      }
+
+      const json = await response.json();
+      return json.results || [];
+    } catch (error) {
+      console.error("Error fetching from TMDB:", error);
+      return [];
+    }
   };
 
   const handleGptSearchClick = async () => {
     console.log(searchText.current.value);
-    const gptQuery =
-      "Act as a Movie Recommendation system and suggest some movies for the query : " +
-      searchText.current.value +
-      " . only give me name of some movies, in bullet points or comma separated.";
 
-    const gptResults = await openai.chat.completions.create({
-      messages: [{ role: "user", content: gptQuery }],
-      model: "gpt-3.5-turbo",
+    const query =
+  "You are a Movie Recommendation system. Based on the query, suggest a list of movies in bullet points. The list should include only the names of the movies, excluding any stars (*) or movie years. The query is: " +
+  searchText.current.value +
+  ". Please provide the movie names without any additional commentary or details.";
+
+
+    const result = await huggingface.textGeneration({
+      model: "Qwen/QwQ-32B-Preview", // Specify the model
+      inputs: query, // Input prompt
+      parameters: {
+        temperature: 0.7, // Add temperature (adjust as needed)
+      },
     });
 
-    if (!gptResults.choices) {
-      //TODO: Write Error Handling
-    }
-    console.log(gptResults.choices?.[0]?.message.content);
+    console.log(result.generated_text);
 
-    const gptMovies = gptResults.choices?.[0]?.message?.content.split(",");
+    // Processing the output to extract movie names
+    const gptMovies = result.generated_text
+      .split("\n") // Split text into lines
+      .filter((line) => line.startsWith("-")) // Keep only lines starting with a bullet point
+      .map((line) => line.replace("- ", "").trim()); // Remove the bullet point and trim whitespace
 
     const promiseArray = gptMovies.map((movie) => searchMovieTMDB(movie));
 
     const tmdbResults = await Promise.all(promiseArray);
-    console.log(tmdbResults);
 
-    dispatch(addGptMovieResult({movieNames:gptMovies, movieResults: tmdbResults}));
+    dispatch(
+      addGptMovieResult({ movieNames: gptMovies, movieResults: tmdbResults })
+    );
   };
 
   return (
